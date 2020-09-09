@@ -56,3 +56,8 @@
         #state: enabled
         #policy: deny
         #direction: incoming
+
+    - name: Set timezone
+      timezone:
+        name: Europe/Berlin
+
