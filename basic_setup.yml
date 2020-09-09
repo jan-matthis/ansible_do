@@ -1,0 +1,8 @@
+---
+- hosts: workstation
+  become: yes
+
+  tasks:
+    - include_vars:
+        dir: vars/
+    - include_tasks: tasks/basic_setup.yml

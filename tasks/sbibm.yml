@@ -1,0 +1,30 @@
+---
+- name: sbibm environment
+  block:
+    - name: Clone/update sbibm repo
+      git:
+        repo: git@github.com:mackelab/sbibm.git
+        dest: "{{ sbibm_repo_path }}"
+        version: "{{ sbibm_version }}"
+        accept_hostkey: yes
+    - name: Environment variables
+      blockinfile:
+        path: "{{ ansible_env.HOME }}/.profile"
+        state: present
+        create: yes
+        block: |
+          # sbibm
+          export JULIA_SYSIMAGE_DIFFEQTORCH="$HOME/.julia_sysimage_diffeqtorch.so"
+        marker: '# {mark} ANSIBLE MANAGED BLOCK sbibm.sbibm_env'
+    - name: Install sbibm
+      shell: |
+        . ~/.profile
+        conda create -n {{ sbibm_environment }} python={{ sbibm_python_version }} -y
+        conda activate {{ sbibm_environment }}
+        pip install -e ".[dev]"
+        python -c "from diffeqtorch.install import install_and_test; install_and_test()"
+      args:
+        executable: /bin/bash
+        chdir: "{{ sbibm_repo_path }}"
+  tags:
+  - sbibm

@@ -1,0 +1,11 @@
+- name: git_dotfiles
+  src: https://github.com/jan-matthis/ansible_git_dotfiles
+  version: master
+
+- name: miniconda
+  src: https://github.com/jan-matthis/ansible_miniconda
+  version: master
+
+- name: dropbox
+  src: https://github.com/webarchitect609/ansible-role-dropbox
+  version: master

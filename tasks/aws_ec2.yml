@@ -1,0 +1,63 @@
+---
+- name: AWS EC2
+  block:
+    - name: Create EC2 key from local key
+      local_action:
+        module: ec2_key
+        name: local_key
+        key_material: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+      register: ssh_key
+    - name: Security group
+      ec2_group:
+        name: Allow access on ports
+        description: SSH, NFS, Redis, Streamlit, RQ Dashboard
+        rules:
+          - proto: tcp
+            from_port: 22
+            to_port: 22
+            cidr_ip: 0.0.0.0/0
+            rule_desc: allow all on port 22
+          - proto: tcp
+            from_port: 2049
+            to_port: 2049
+            cidr_ip: 0.0.0.0/0
+            rule_desc: allow all on port 2049
+          - proto: tcp
+            from_port: 6379
+            to_port: 6379
+            cidr_ip: 0.0.0.0/0
+            rule_desc: allow all on port 6379
+          - proto: tcp
+            from_port: 8501
+            to_port: 8501
+            cidr_ip: 0.0.0.0/0
+            rule_desc: allow all on port 8501
+          - proto: tcp
+            from_port: 9181
+            to_port: 9181
+            cidr_ip: 0.0.0.0/0
+            rule_desc: allow all on port 9181
+      delegate_to: localhost
+      register: security_group
+    - name: Provision EC2
+      ec2:
+        instance_type: "{{ aws_ec2_instance_type }}"
+        image: "{{ aws_ec2_ami }}"
+        key_name: "{{ ssh_key.key.name }}"
+        group_id: "{{ security_group.group_id }}"
+        wait: yes
+        instance_tags:
+          name: "{{ aws_ec2_tag_name }}"
+        count_tag:
+          name: "{{ aws_ec2_tag_name }}"
+        exact_count: "{{ aws_ec2_count }}"
+      delegate_to: localhost
+      register: instances
+    - debug: msg="{{ instances }}"
+      delegate_to: localhost
+    - name: Wait for the instances to boot by checking the ssh port
+      wait_for: host="{{ item.public_ip }}" port=22 delay=10 timeout=300 state=started
+      with_items: "{{ instances.instances }}"
+      delegate_to: localhost
+    - name: Refresh inventory
+      meta: refresh_inventory

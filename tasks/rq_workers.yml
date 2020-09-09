@@ -1,0 +1,15 @@
+---
+- name: RQ workers
+  block:
+    - name: Create/update supervisor config
+      template:
+        src: "{{ rq_workers_supervisord_template }}"
+        dest: "{{ ansible_env.HOME }}/supervisord.conf"
+        mode: '0644'
+    - name: Create/update launch script
+      template:
+        src: "{{ rq_workers_launch_template }}"
+        dest: "{{ ansible_env.HOME }}/launch_rq_workers.sh"
+        mode: '0744'
+    - name: Launch
+      command: "{{ ansible_env.HOME }}/launch_rq_workers.sh"

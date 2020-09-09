@@ -1,0 +1,5 @@
+---
+- name: Git Dotfiles
+  block:
+    - include_role:
+        name: git_dotfiles

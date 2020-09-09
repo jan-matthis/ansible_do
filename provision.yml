@@ -1,0 +1,11 @@
+---
+- hosts: workstation
+  become: no
+
+  tasks:
+    - include_vars:
+        dir: vars/
+    - include_tasks: tasks/ssh_keys.yml
+    - include_tasks: tasks/git_dotfiles.yml
+    - include_tasks: tasks/dropbox.yml
+    - include_tasks: tasks/miniconda.yml

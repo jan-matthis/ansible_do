@@ -1,0 +1,7 @@
+---
+aws_efs_region: "{{ lookup('env', 'AWS_EFS_REGION') }}"
+aws_efs_id: "{{ lookup('env', 'AWS_EFS_ID') }}"
+aws_efs_path: "/home/ubuntu/results"
+aws_efs_owner: "ubuntu"
+aws_efs_group: "ubuntu"
+aws_efs_permissions: 0777

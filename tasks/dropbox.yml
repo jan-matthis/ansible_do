@@ -1,0 +1,9 @@
+---
+- name: Dropbox install
+  become: yes
+  block:
+    - name: Install required system packages
+      apt: name={{ dropbox_sys_packages }} state=latest
+
+    - include_role:
+        name: dropbox
